@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="567.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.eni.GestionParkingENIJavaFX.bll.GestionParkingENIController">
+    <children>
+        <TableView fx:id="tabReservations" layoutX="31.0" layoutY="74.0" prefHeight="225.0" prefWidth="350.0">
+            <columns>
+                <TableColumn fx:id="colNomVoiture" prefWidth="108.0" text="Nom" />
+                <TableColumn fx:id="colPI" prefWidth="114.0" text="PI" />
+                <TableColumn fx:id="colConducteur" prefWidth="127.0" text="Nom et Prénom" />
+            </columns>
+        </TableView>
+        <TableView fx:id="tabConducteurs" layoutX="420.0" layoutY="74.0" prefHeight="225.0" prefWidth="246.0">
+            <columns>
+                <TableColumn fx:id="colNom" prefWidth="110.0" text="Nom" />
+                <TableColumn fx:id="colPrenom" prefWidth="109.0" text="Prénom" />
+            </columns>
+        </TableView>
+        <Label fx:id="lblNomVoiture" layoutX="31.0" layoutY="333.0" text="Nom : " />
+        <Label fx:id="lblPI" layoutX="31.0" layoutY="371.0" text="PI : " />
+        <Label fx:id="lblNomConducteur" layoutX="420.0" layoutY="327.0" text="Nom : " />
+        <Label fx:id="lblPrenomConducteur" layoutX="420.0" layoutY="365.0" text="Prénom :" />
+        <TextField fx:id="txtNomVoiture" layoutX="106.0" layoutY="329.0" />
+        <TextField fx:id="txtPIVoiture" layoutX="106.0" layoutY="367.0" />
+        <TextField fx:id="txtNomConducteur" layoutX="493.0" layoutY="323.0" />
+        <TextField fx:id="txtPrenomConducteur" layoutX="493.0" layoutY="361.0" />
+        <ComboBox fx:id="cmbConducteur" layoutX="106.0" layoutY="405.0" prefWidth="150.0" />
+        <Button fx:id="btnAjouterReservation" layoutX="49.0" layoutY="463.0" mnemonicParsing="false" text="Ajouter" />
+        <Button fx:id="btnModifierReservation" layoutX="119.0" layoutY="463.0" mnemonicParsing="false" text="Modifier" />
+        <Button fx:id="btnSupprimerVoiture" layoutX="193.0" layoutY="463.0" mnemonicParsing="false" text="Supprimer" />
+        <Button fx:id="btnAjouterConducteur" layoutX="435.0" layoutY="463.0" mnemonicParsing="false" text="Ajouter" />
+        <Button fx:id="btnModifierConducteur" layoutX="505.0" layoutY="463.0" mnemonicParsing="false" text="Modifier" />
+        <Button fx:id="btnSupprimerConducteur" layoutX="579.0" layoutY="463.0" mnemonicParsing="false" text="Supprimer" />
+        <Button fx:id="btnExportXML" layoutX="147.0" layoutY="522.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format XML" />
+        <Button fx:id="btnExportCSV" layoutX="381.0" layoutY="522.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format Excel" />
+        <Label fx:id="lblTitre" layoutX="210.0" layoutY="14.0" text="Gestion du Parking " textFill="#2200ff">
+            <font>
+                <Font name="Calibri Bold" size="36.0" />
+            </font>
+        </Label>
+    </children>
+</AnchorPane>
