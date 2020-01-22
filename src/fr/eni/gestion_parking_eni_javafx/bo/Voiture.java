@@ -5,6 +5,7 @@ package fr.eni.gestion_parking_eni_javafx.bo;
  */
 public class Voiture {
 
+
     private int numVoiture;
     private String designation;
     private String immatriculation;
@@ -59,8 +60,8 @@ public class Voiture {
         this.unConducteur = unConducteur;
     }
 
-    public String getConducteurNomPrenom() {
-        return this.unConducteur.getNumConducteur() != 0 ? this.unConducteur.getNom().toUpperCase() + " "+ this.unConducteur.getPrenom() : null;
+     public String getConducteurNomPrenom() {
+        return this.unConducteur.getNumConducteur() != 0 ? this.unConducteur.getNom().toUpperCase().trim() + " "+ this.unConducteur.getPrenom().trim() : "";
     }
 
     @Override
@@ -75,6 +76,6 @@ public class Voiture {
 
     @Override
     public boolean equals(Object obj) {
-        return ((Voiture)obj).getNumVoiture() == this.numVoiture;
+        return obj instanceof Voiture && ((Voiture)obj).getNumVoiture() == this.numVoiture;
     }
 }

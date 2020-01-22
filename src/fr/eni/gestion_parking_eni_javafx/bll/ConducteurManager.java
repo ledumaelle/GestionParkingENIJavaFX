@@ -4,9 +4,10 @@ import fr.eni.gestion_parking_eni_javafx.bo.Conducteur;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoConducteur;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoFactory;
+import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manager ConducteurManager
@@ -16,10 +17,15 @@ public class ConducteurManager
     private DaoConducteur daoConducteur;
     private List<Conducteur> lesConducteurs;
 
-    //Design Pattern Singleton
-    //Statique toute MAJ
     private static ConducteurManager INSTANCE;
 
+    public static Logger logger = MonLogger.getLogger("ConducteurManager");
+
+    /**
+     * Design Pattern Singleton
+     * @return ConducteurManager
+     * @throws BllException Si erreur remonte à la couche supp
+     */
     public static ConducteurManager getInstance() throws BllException
     {
         if(INSTANCE ==null)
@@ -30,6 +36,10 @@ public class ConducteurManager
         return INSTANCE;
     }
 
+    /**
+     * Constructeur Privé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
     private ConducteurManager() throws BllException
     {
         daoConducteur = DaoFactory.getDaoConducteur();
@@ -39,37 +49,56 @@ public class ConducteurManager
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
     }
+
+    /**
+     * Renvoie les conducteurs
+     * @return Liste de conducteur
+     * @throws BllException Si erreur remonte à la couche supp
+     */
     public List<Conducteur> getLesConducteurs() throws BllException {
-        List<Conducteur> lesConducteurs = new ArrayList<>();
+        List<Conducteur> lesConducteurs;
         try
         {
             lesConducteurs = daoConducteur.selectAll();
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.getLesConducteurs() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
         return lesConducteurs;
     }
 
-    public Conducteur getConducteurById(int id) throws DaoException,BllException
+    /**
+     * Id du conducteur
+     * @return L'objet conducteur correspond à l'id passé en param
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public Conducteur getConducteurById(int id) throws BllException
     {
-        Conducteur unConducteur = new Conducteur();
+        Conducteur unConducteur;
         try
         {
             unConducteur = daoConducteur.selectById(id);
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.getConducteurById() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
         return unConducteur;
     }
 
-    public boolean addConducteur(Conducteur UnConducteur) throws DaoException,BllException
+    /**
+     * @param UnConducteur Conducteur à ajouter
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean addConducteur(Conducteur UnConducteur) throws BllException
     {
         boolean succes = false;
         try
@@ -82,12 +111,18 @@ public class ConducteurManager
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.addConducteur() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
         return succes;
     }
 
-    public boolean updateConducteur(Conducteur UnConducteur) throws DaoException,BllException
+    /**
+     * @param UnConducteur Conducteur à mettre à jour
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean updateConducteur(Conducteur UnConducteur) throws BllException
     {
         boolean succes = false;
         try
@@ -100,12 +135,18 @@ public class ConducteurManager
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.updateConducteur() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
         return succes;
     }
 
-    public boolean removeConducteur(Conducteur UnConducteur) throws DaoException,BllException
+    /**
+     * @param UnConducteur Conducteur à supprimer
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean removeConducteur(Conducteur UnConducteur) throws BllException
     {
         boolean succes = false;
         try
@@ -118,6 +159,7 @@ public class ConducteurManager
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.removeConducteur() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
         return succes;

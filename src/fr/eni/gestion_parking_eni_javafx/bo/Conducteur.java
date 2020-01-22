@@ -57,6 +57,6 @@ public class Conducteur {
 
     @Override
     public boolean equals(Object obj) {
-        return obj!= null ? ((Conducteur)obj).getNumConducteur() == this.numConducteur : false;
+        return obj instanceof Conducteur && ((Conducteur) obj).getNumConducteur() == this.numConducteur;
     }
 }

@@ -18,7 +18,7 @@ public class Main extends Application {
         try
         {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/gestion_parking.fxml"));
-            AnchorPane rootLayout=(AnchorPane) loader.load();
+            AnchorPane rootLayout= loader.load();
             Scene scene = new Scene(rootLayout);
             primaryStage.setTitle("Gestion de Parking ENI");
             primaryStage.setScene(scene);

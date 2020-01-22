@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -26,15 +27,30 @@
                 <TableColumn fx:id="colPrenom" prefWidth="121.0" text="Prénom" />
             </columns>
         </TableView>
-        <Label fx:id="lblDesignation" layoutX="31.0" layoutY="333.0" text="Désignaton : " />
+        <Label fx:id="lblDesignation" layoutX="31.0" layoutY="333.0" text="Désignation : " />
         <Label fx:id="lblImmatriculation" layoutX="31.0" layoutY="371.0" text="Immatriculation : " />
         <Label fx:id="lblNom" layoutX="400.0" layoutY="327.0" text="Nom : " />
         <Label fx:id="lblPrenom" layoutX="400.0" layoutY="365.0" text="Prénom :" />
-        <TextField fx:id="txtDesignation" layoutX="141.0" layoutY="329.0" />
-        <TextField fx:id="txtImmatriculation" layoutX="141.0" layoutY="367.0" />
-        <TextField fx:id="txtNom" layoutX="473.0" layoutY="323.0" />
-        <TextField fx:id="txtPrenom" layoutX="473.0" layoutY="361.0" />
-        <ComboBox fx:id="cmbConducteur" layoutX="141.0" layoutY="405.0" prefWidth="150.0" />
+        <TextField fx:id="txtDesignation" layoutX="141.0" layoutY="329.0">
+         <tooltip>
+            <Tooltip text="Désignation de la voiture" />
+         </tooltip></TextField>
+        <TextField fx:id="txtImmatriculation" layoutX="141.0" layoutY="367.0">
+         <tooltip>
+            <Tooltip text="Immatriculation de la voiture" />
+         </tooltip></TextField>
+        <TextField fx:id="txtNom" layoutX="473.0" layoutY="323.0">
+         <tooltip>
+            <Tooltip text="Nom du conducteur" />
+         </tooltip></TextField>
+        <TextField fx:id="txtPrenom" layoutX="473.0" layoutY="361.0">
+         <tooltip>
+            <Tooltip text="Prénom du conducteur" />
+         </tooltip></TextField>
+        <ComboBox fx:id="cmbConducteur" layoutX="141.0" layoutY="405.0" prefWidth="150.0">
+         <tooltip>
+            <Tooltip text="Conducteur de la voiture" />
+         </tooltip></ComboBox>
         <Button fx:id="btnAjouterVoiture" layoutX="49.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#handleAddVoiture" text="Ajouter" />
         <Button fx:id="btnModifierVoiture" disable="true" layoutX="119.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#updateVoiture" text="Modifier" />
         <Button fx:id="btnSupprimerVoiture" disable="true" layoutX="193.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#deleteVoiture" text="Supprimer" />
@@ -48,8 +64,8 @@
         <Button fx:id="btnAjouterConducteur" layoutX="435.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#handleAddConducteur" text="Ajouter" />
         <Button fx:id="btnModifierConducteur" disable="true" layoutX="505.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#updateConducteur" text="Modifier" />
         <Button fx:id="btnSupprimerConducteur" disable="true" layoutX="579.0" layoutY="463.0" mnemonicParsing="false" onMouseClicked="#deleteConducteur" text="Supprimer" />
-        <Button fx:id="btnExportXML" layoutX="147.0" layoutY="522.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format XML" />
-        <Button fx:id="btnExportCSV" layoutX="381.0" layoutY="522.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format Excel" />
+        <Button fx:id="btnExportXML" layoutX="147.0" layoutY="522.0" mnemonicParsing="false" onMouseClicked="#handleExportXML" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format XML" />
+        <Button fx:id="btnExportCSV" layoutX="381.0" layoutY="522.0" mnemonicParsing="false" onMouseClicked="#handleExportCSV" prefHeight="25.0" prefWidth="217.0" text="Exporter les données au format Excel" />
         <Label fx:id="lblTitre" layoutX="210.0" layoutY="14.0" text="Gestion du Parking " textFill="#2200ff">
             <font>
                 <Font name="Calibri Bold" size="36.0" />
@@ -65,7 +81,7 @@
             <Image url="@../../../../../img/save.png" />
          </image>
       </ImageView>
-      <Label fx:id="lblConducteur" layoutX="31.0" layoutY="409.0" text="Conducteur : " />
+      <Label fx:id="lblConducteur" layoutX="32.0" layoutY="409.0" text="Conducteur : " />
 
     </children>
 </AnchorPane>

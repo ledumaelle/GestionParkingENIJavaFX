@@ -4,6 +4,7 @@ import fr.eni.gestion_parking_eni_javafx.bo.Conducteur;
 import fr.eni.gestion_parking_eni_javafx.bo.Voiture;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoVoiture;
+import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Classe DaoVoitureJdbcImpl
@@ -22,6 +24,9 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
     public static final String RQT_INSERT = "INSERT INTO VOITURES (designation,immatriculation,numConducteur) VALUES (?,?,?)";
     public static final String RQT_UPDATE = "UPDATE VOITURES SET designation = ?, immatriculation = ?, numConducteur= ? WHERE numVoiture = ?";
     public static final String RQT_DELETE = "DELETE FROM VOITURES WHERE numVoiture = ?";
+
+
+    public static Logger logger = MonLogger.getLogger("DaoVoitureJdbcImpl");
 
     /**
      * Sélectionne toutes les voitures
@@ -42,6 +47,7 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
                 lesVoitures.add(itemBuilder(rs));
             }
         } catch (Exception ex) {
+            logger.severe("ERREUR DaoVoitureJdbcImpl.selectAll() : " + ex.getMessage());
             throw new DaoException(ex.getMessage());
         }
 
@@ -68,6 +74,7 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
                 UneVoiture = itemBuilder(rs);
             }
         } catch (Exception ex) {
+            logger.severe("ERREUR DaoVoitureJdbcImpl.selectById() : " + ex.getMessage());
             throw new DaoException(ex.getMessage());
         }
         return UneVoiture;
@@ -89,12 +96,21 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
             PreparedStatement requete = cnx.prepareStatement(RQT_INSERT);
             requete.setString(1, UneVoiture.getDesignation());
             requete.setString(2, UneVoiture.getImmatriculation());
-            requete.setInt(3, UneVoiture.getUnConducteur().getNumConducteur());
+            if(UneVoiture.getUnConducteur() != null)
+            {
+                requete.setInt(3, UneVoiture.getUnConducteur().getNumConducteur());
+            }
+            else
+            {
+                requete.setNull(3,java.sql.Types.INTEGER);
+            }
+
 
             nbLignes = requete.executeUpdate();
 
         } catch (Exception ex)
         {
+            logger.severe("ERREUR DaoVoitureJdbcImpl.insert() : " + ex.getMessage());
             throw new DaoException(ex.getMessage());
         }
         return nbLignes > 0;
@@ -116,13 +132,21 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
             PreparedStatement requete = cnx.prepareStatement(RQT_UPDATE);
             requete.setString(1, UneVoiture.getDesignation());
             requete.setString(2, UneVoiture.getImmatriculation());
-            requete.setInt(3, UneVoiture.getUnConducteur().getNumConducteur());
+            if(UneVoiture.getUnConducteur() != null)
+            {
+                requete.setInt(3, UneVoiture.getUnConducteur().getNumConducteur());
+            }
+            else
+            {
+                requete.setNull(3,java.sql.Types.INTEGER);
+            }
             requete.setInt(4, UneVoiture.getNumVoiture());
 
             nbLignes = requete.executeUpdate();
 
         } catch (Exception ex)
         {
+            logger.severe("ERREUR DaoVoitureJdbcImpl.update() : " + ex.getMessage());
             throw new DaoException(ex.getMessage());
         }
         return nbLignes > 0;
@@ -148,6 +172,7 @@ public class DaoVoitureJdbcImpl implements DaoVoiture {
 
         } catch (Exception ex)
         {
+            logger.severe("ERREUR DaoVoitureJdbcImpl.delete() : " + ex.getMessage());
             throw new DaoException(ex.getMessage());
         }
         return nbLignes > 0 ;

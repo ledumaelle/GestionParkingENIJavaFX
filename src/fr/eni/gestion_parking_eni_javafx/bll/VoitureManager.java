@@ -4,9 +4,10 @@ import fr.eni.gestion_parking_eni_javafx.bo.Voiture;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoVoiture;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoFactory;
+import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manager VoitureManager
@@ -16,9 +17,15 @@ public class VoitureManager
     private DaoVoiture daoVoiture;
     private List<Voiture> lesVoitures;
 
-    //Design Pattern Singleton
+    public static Logger logger = MonLogger.getLogger("VoitureManager");
+
     private static VoitureManager instance;
 
+    /**
+     *  Design Pattern Singleton
+     * @return VoitureManager
+     * @throws BllException Si erreur remonte à la couche supp
+     */
     public static VoitureManager getInstance() throws BllException
     {
         if(instance ==null)
@@ -29,6 +36,10 @@ public class VoitureManager
         return instance;
     }
 
+    /**
+     * Constructeur Privé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
     private VoitureManager() throws BllException
     {
         daoVoiture = DaoFactory.getDaoVoiture();
@@ -38,57 +49,125 @@ public class VoitureManager
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
     }
-    public List<Voiture> getLesVoitures() throws DaoException,BllException
+
+    /**
+     * Renvoie les voitures
+     * @return Liste de voiture
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public List<Voiture> getLesVoitures() throws BllException
     {
-        List<Voiture> lesVoitures = new ArrayList<>();
+        List<Voiture> lesVoitures;
         try
         {
             lesVoitures = daoVoiture.selectAll();
         }
         catch(DaoException ex)
         {
+            logger.severe("ERREUR VoitureManager.getLesVoitures() " + ex.getMessage());
             throw new BllException(ex.getMessage());
         }
 
         return lesVoitures;
     }
 
-    public Voiture getVoitureById(int id) throws DaoException,BllException
+    /**
+     *
+     * @param id Id de la voiture
+     * @return L'objet voiture correspond à l'id passé en param
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public Voiture getVoitureById(int id) throws BllException
     {
-        return daoVoiture.selectById(id);
+        Voiture uneVoiture;
+
+        try
+        {
+            uneVoiture = daoVoiture.selectById(id);
+        }
+        catch(DaoException ex)
+        {
+            logger.severe("ERREUR VoitureManager.getVoitureById() " + ex.getMessage());
+            throw new BllException(ex.getMessage());
+        }
+
+        return uneVoiture;
     }
 
-    public boolean addVoiture(Voiture UneVoiture) throws DaoException,BllException
+    /**
+     * @param UneVoiture Voiture à ajouter
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean addVoiture(Voiture UneVoiture) throws BllException
     {
-        if(daoVoiture.insert(UneVoiture))
+        boolean succes;
+        try
         {
-            lesVoitures.add(UneVoiture);
-            return true;
+            succes = daoVoiture.insert(UneVoiture);
         }
-        return false;
+        catch(DaoException ex)
+        {
+            logger.severe("ERREUR VoitureManager.addVoiture() " + ex.getMessage());
+            throw new BllException(ex.getMessage());
+        }
+
+        return succes;
     }
 
-    public boolean updateVoiture(Voiture UnVoiture) throws DaoException,BllException
+    /**
+     * @param UnVoiture Voiture à mettre à jour
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean updateVoiture(Voiture UnVoiture) throws BllException
     {
-        if(daoVoiture.update(UnVoiture))
+        boolean succes;
+        try
         {
-            lesVoitures.set(lesVoitures.indexOf(UnVoiture), UnVoiture);
-            return true;
+            succes = daoVoiture.update(UnVoiture);
+            if(succes)
+            {
+                lesVoitures.set(lesVoitures.indexOf(UnVoiture), UnVoiture);
+            }
         }
-        return false;
+        catch(DaoException ex)
+        {
+            logger.severe("ERREUR VoitureManager.updateVoiture() " + ex.getMessage());
+            throw new BllException(ex.getMessage());
+        }
+
+        return succes;
     }
 
-    public boolean removeVoiture(Voiture UnVoiture) throws DaoException,BllException
+    /**
+     * @param UnVoiture Voiture à supprimer
+     * @return boolean pour savoir si l'ajout s'est bien passé
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean removeVoiture(Voiture UnVoiture) throws BllException
     {
-        if(daoVoiture.delete(UnVoiture.getNumVoiture()))
+        boolean succes;
+        try
         {
-            lesVoitures.remove(UnVoiture);
-            return true;
+            succes = daoVoiture.delete(UnVoiture.getNumVoiture());
+
+            if(succes)
+            {
+                lesVoitures.remove(UnVoiture);
+            }
         }
-        return false;
+        catch(DaoException ex)
+        {
+            logger.severe("ERREUR VoitureManager.removeVoiture() " + ex.getMessage());
+            throw new BllException(ex.getMessage());
+        }
+
+        return succes;
     }
 
 

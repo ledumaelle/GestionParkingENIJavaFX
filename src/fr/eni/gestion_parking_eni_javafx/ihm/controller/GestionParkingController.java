@@ -5,14 +5,18 @@ import fr.eni.gestion_parking_eni_javafx.bll.ConducteurManager;
 import fr.eni.gestion_parking_eni_javafx.bll.VoitureManager;
 import fr.eni.gestion_parking_eni_javafx.bo.Conducteur;
 import fr.eni.gestion_parking_eni_javafx.bo.Voiture;
-import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
+import java.awt.*;
+import java.beans.XMLEncoder;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +35,7 @@ public class GestionParkingController implements Initializable
     private VoitureManager voitureManager;
 
     @FXML
-    private TableView tabVoitures;
+    private TableView<Voiture> tabVoitures;
     @FXML
     private TableColumn<Voiture, String> colDesignation;
     @FXML
@@ -44,7 +48,7 @@ public class GestionParkingController implements Initializable
     @FXML
     private TextField txtImmatriculation;
     @FXML
-    private ComboBox cmbConducteur;
+    private ComboBox<Conducteur> cmbConducteur;
     @FXML
     private ImageView imgSaveVoiture;
 
@@ -78,8 +82,8 @@ public class GestionParkingController implements Initializable
 
     /**
      * Initialise le composant
-     * @param url
-     * @param resourceBundle
+     * @param url url du composant
+     * @param resourceBundle resourceBundle
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -90,8 +94,8 @@ public class GestionParkingController implements Initializable
             conducteurManager = ConducteurManager.getInstance();
 
             // Initialise le TableView Conducteur
-            colNom.setCellValueFactory(new PropertyValueFactory<Conducteur, String>("nom"));
-            colPrenom.setCellValueFactory(new PropertyValueFactory<Conducteur, String>("prenom"));
+            colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+            colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
 
             // Pour redimensionner les colonnes automatiquement
             tabConducteurs.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -102,10 +106,10 @@ public class GestionParkingController implements Initializable
             voitureManager = VoitureManager.getInstance();
 
             // Initialise le TableView Conducteur
-            colDesignation.setCellValueFactory(new PropertyValueFactory<Voiture, String>("designation"));
-            colImmatriculation.setCellValueFactory(new PropertyValueFactory<Voiture, String>("immatriculation"));
+            colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
+            colImmatriculation.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
 
-            colConducteur.setCellValueFactory(new PropertyValueFactory<Voiture, String>("ConducteurNomPrenom"));
+            colConducteur.setCellValueFactory(new PropertyValueFactory<>("ConducteurNomPrenom"));
             //colConducteur.setSortable(false);
 
             // Pour redimensionner les colonnes automatiquement
@@ -125,7 +129,7 @@ public class GestionParkingController implements Initializable
      */
     private Voiture getVoitureSelected()
     {
-        return ((Voiture)tabVoitures.getSelectionModel().getSelectedItem());
+        return tabVoitures.getSelectionModel().getSelectedItem();
     }
 
     /**
@@ -178,7 +182,8 @@ public class GestionParkingController implements Initializable
     /**
      * Rénitialise le formulaire pour ajouter un conducteur
      */
-    public void handleAddConducteur() {
+    public void handleAddConducteur()
+    {
 
         txtNom.setText("");
         txtPrenom.setText("");
@@ -189,12 +194,13 @@ public class GestionParkingController implements Initializable
         btnAjouterConducteur.setDisable(true);
         btnModifierConducteur.setDisable(true);
         btnSupprimerConducteur.setDisable(true);
+        btnSupprimerConducteur.setDisable(true);
     }
 
     /**
      * Rénitialise le formulaire pour ajouter une voiture
      */
-    public void handleAddVoiture() {
+    public void handleAddVoiture(){
 
         txtDesignation.setText("");
         txtImmatriculation.setText("");
@@ -206,25 +212,23 @@ public class GestionParkingController implements Initializable
         btnAjouterVoiture.setDisable(true);
         btnModifierVoiture.setDisable(true);
         btnSupprimerVoiture.setDisable(true);
+
+        cmbConducteur.setItems(null);
+        cmbConducteur.setItems(FXCollections.observableList(getLesConducteurs()));
+        cmbConducteur.setValue(null);
     }
 
-    /**
-     * Remplir les champs associés à la voiture
-     * @param uneVoiture Voiture passée en param
-     */
-    private void remplirVoiture(Voiture uneVoiture)
-    {
-        txtDesignation.setText("");
-        txtImmatriculation.setText("");
-        cmbConducteur.setItems(null);
 
-        txtDesignation.setText(uneVoiture.getDesignation());
-        txtImmatriculation.setText(uneVoiture.getImmatriculation());
-        cmbConducteur.setItems(FXCollections.observableList(lesConducteurs));
-        if(uneVoiture.getUnConducteur() != null )
+    private List<Conducteur> getLesConducteurs(){
+        List<Conducteur> lesConducteurs = new ArrayList<>();
+        try
         {
-            cmbConducteur.setValue(uneVoiture.getUnConducteur());
+            lesConducteurs = conducteurManager.getLesConducteurs();
+            lesConducteurs.add(0,null);
+        } catch (BllException e) {
+            e.printStackTrace();
         }
+        return lesConducteurs;
     }
 
     /**
@@ -236,8 +240,24 @@ public class GestionParkingController implements Initializable
         txtNom.setText("");
         txtPrenom.setText("");
 
-        txtNom.setText(unConducteur.getNom());
-        txtPrenom.setText(unConducteur.getPrenom());
+        txtNom.setText(unConducteur.getNom().trim());
+        txtPrenom.setText(unConducteur.getPrenom().trim());
+    }
+
+    /**
+     * Remplir les champs associés à la voiture
+     * @param uneVoiture Voiture passée en param
+     */
+    private void remplirVoiture(Voiture uneVoiture) {
+        txtDesignation.setText("");
+        txtImmatriculation.setText("");
+        cmbConducteur.setItems(null);
+
+        txtDesignation.setText(uneVoiture.getDesignation().trim());
+        txtImmatriculation.setText(uneVoiture.getImmatriculation().trim());
+
+        cmbConducteur.setItems(FXCollections.observableList(getLesConducteurs()));
+        cmbConducteur.setValue(uneVoiture.getUnConducteur());
     }
 
     /**
@@ -291,7 +311,7 @@ public class GestionParkingController implements Initializable
             btnModifierVoiture.setDisable(true);
             btnSupprimerVoiture.setDisable(true);
 
-        } catch (BllException | DaoException e) {
+        } catch (BllException e) {
             e.printStackTrace();
         }
     }
@@ -315,7 +335,6 @@ public class GestionParkingController implements Initializable
                 {
                     alert.setTitle("Succès");
                     alert.setHeaderText("Ajout du conducteur effectué");
-                    alert.showAndWait();
 
                     refreshConducteur();
                 }
@@ -328,7 +347,7 @@ public class GestionParkingController implements Initializable
 
                 alert.showAndWait();
 
-            } catch (DaoException | BllException e) {
+            } catch (BllException e) {
                 e.printStackTrace();
             }
         }
@@ -368,7 +387,7 @@ public class GestionParkingController implements Initializable
 
                     alert.showAndWait();
 
-                } catch (DaoException | BllException e) {
+                } catch (BllException e) {
                     e.printStackTrace();
                 }
             }
@@ -404,7 +423,7 @@ public class GestionParkingController implements Initializable
                 }
                 alert.showAndWait();
 
-            } catch (DaoException | BllException e) {
+            } catch (BllException e) {
                 e.printStackTrace();
             }
         }
@@ -427,7 +446,6 @@ public class GestionParkingController implements Initializable
                 {
                     alert.setTitle("Succès");
                     alert.setHeaderText("Ajout de la voiture effectuée");
-                    alert.showAndWait();
 
                     refreshVoiture();
                 }
@@ -440,7 +458,7 @@ public class GestionParkingController implements Initializable
 
                 alert.showAndWait();
 
-            } catch (DaoException | BllException e) {
+            } catch (BllException e) {
                 e.printStackTrace();
             }
         }
@@ -451,7 +469,7 @@ public class GestionParkingController implements Initializable
         Voiture uneVoiture = new Voiture();
         uneVoiture.setDesignation(txtDesignation.getText());
         uneVoiture.setImmatriculation(txtImmatriculation.getText());
-        uneVoiture.setUnConducteur((Conducteur)cmbConducteur.getSelectionModel().getSelectedItem());
+        uneVoiture.setUnConducteur(cmbConducteur.getSelectionModel().getSelectedItem());
 
         return uneVoiture;
     }
@@ -464,7 +482,7 @@ public class GestionParkingController implements Initializable
         Voiture uneVoiture = itemVoiture();
         uneVoiture.setNumVoiture(getVoitureSelected().getNumVoiture());
 
-        if(uneVoiture != null)
+        if(isInputValidVoiture())
         {
             try
             {
@@ -488,7 +506,7 @@ public class GestionParkingController implements Initializable
 
                 alert.showAndWait();
 
-            } catch (DaoException | BllException e) {
+            } catch (BllException e) {
                 e.printStackTrace();
             }
         }
@@ -523,12 +541,16 @@ public class GestionParkingController implements Initializable
 
                 alert.showAndWait();
 
-            } catch (DaoException | BllException e) {
+            } catch (BllException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * Contrôle de saisie pour la voiture
+     * @return boolean
+     */
     private boolean isInputValidVoiture()
     {
         String messageErreur = "";
@@ -558,6 +580,10 @@ public class GestionParkingController implements Initializable
         return retour;
     }
 
+    /**
+     * Contrôle de saisie pour le conducteur
+     * @return Boolean
+     */
     private boolean isInputValidConducteur()
     {
         String messageErreur = "";
@@ -585,6 +611,254 @@ public class GestionParkingController implements Initializable
             retour = false;
         }
         return retour;
+    }
+
+    /**
+     * Export des fichiers en XML
+     */
+    public void handleExportXML()
+    {
+        List<String> csvFile = new ArrayList<>();
+
+        try
+        {
+            lesConducteurs = conducteurManager.getLesConducteurs();
+            lesVoitures = voitureManager.getLesVoitures();
+
+
+            String cheminCourant = System.getProperty("user.home");
+            csvFile.add(cheminCourant  + "/Downloads/conducteurs.xml");
+            if(!(exportXML(csvFile.get(0),"CONDUCTEUR")))
+            {
+                csvFile.remove(0);
+            }
+
+            csvFile.add(cheminCourant  + "/Downloads/voitures.xml");
+            if(!(exportXML(csvFile.get(1),"VOITURE")))
+            {
+                csvFile.remove(1);
+            }
+
+
+        } catch (BllException e) {
+            e.printStackTrace();
+        }
+
+        if(csvFile.size() > 0)
+        {
+            //Ouvrir le fichier après enregistrement
+            if (Desktop.getDesktop().isSupported(java.awt.Desktop.Action.OPEN))
+            {
+                try
+                {
+                    for (String s : csvFile) {
+                        Desktop.getDesktop().open(new File(s));
+                    }
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            // Affichage du message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Export XML impossible.");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Export XML factorisé
+     * @param pathName Nom du fichier + son chemin
+     * @param classe Nom de la classe
+     * @return Boolean
+     */
+    private boolean exportXML(String pathName,String classe)
+    {
+        XMLEncoder e = null;
+        boolean succes= false;
+        try
+        {
+            e = new XMLEncoder( new BufferedOutputStream(new FileOutputStream(pathName)));
+
+            switch(classe)
+            {
+                case "CONDUCTEUR":
+                    for(Conducteur conducteur : lesConducteurs)
+                    {
+                        e.writeObject(conducteur);
+                    }
+                    break;
+                case "VOITURE":
+                    for(Voiture voiture : lesVoitures)
+                    {
+                        e.writeObject(voiture);
+                    }
+            }
+            succes= true;
+
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            if(e != null)
+            {
+                e.close();
+            }
+        }
+
+        return succes;
+
+    }
+
+    /**
+     * Export des fichiers en CSV
+     */
+    public void handleExportCSV() {
+
+        List<String> csvFile = new ArrayList<>();
+
+        try
+        {
+            lesConducteurs = conducteurManager.getLesConducteurs();
+            lesVoitures = voitureManager.getLesVoitures();
+
+        } catch (BllException e) {
+            e.printStackTrace();
+        }
+
+        String cheminCourant = System.getProperty("user.home");
+        csvFile.add(cheminCourant  + "/Downloads/conducteurs.csv");
+        if(!(exportCSV(csvFile.get(0),"CONDUCTEUR")))
+        {
+            csvFile.remove(0);
+        }
+
+        csvFile.add(cheminCourant  + "/Downloads/voitures.csv");
+        if(!(exportCSV(csvFile.get(1),"VOITURE")))
+        {
+            csvFile.remove(1);
+        }
+
+        if(csvFile.size() > 0)
+        {
+            //Ouvrir le fichier après enregistrement
+            if (Desktop.getDesktop().isSupported(java.awt.Desktop.Action.OPEN))
+            {
+                try
+                {
+                    for (String s : csvFile) {
+                        Desktop.getDesktop().open(new File(s));
+                    }
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            // Affichage du message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Export CSV impossible.");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Export CSV factorisé
+     * @param pathName Nom du fichier + son chemin
+     * @param classe Nom de la classe
+     * @return Boolean
+     */
+    private boolean exportCSV(String pathName, String classe)
+    {
+        FileWriter file = null ;
+        BufferedWriter bw = null;
+
+        boolean succes = false;
+        try
+        {
+            file = new FileWriter(pathName);
+            bw = new BufferedWriter(file);
+
+            StringBuilder str = new StringBuilder();
+            char separator = ';';
+
+            switch(classe)
+            {
+                case "CONDUCTEUR":
+                    str.append("NUMCONDUCTEUR").append(separator);
+                    str.append("NOM").append(separator);
+                    str.append("PRENOM").append(separator);
+
+                    bw.write(str.toString());
+                    for(Conducteur unConducteur : lesConducteurs)
+                    {
+                        str = new StringBuilder();
+                        str.append(unConducteur.getNumConducteur()).append(separator);
+                        str.append(unConducteur.getNom()).append(separator);
+                        str.append(unConducteur.getPrenom()).append(separator);
+
+                        bw.newLine();
+                        bw.write(str.toString());
+                    }
+
+                    break;
+                case "VOITURE":
+                    str.append("NUMVOITURE").append(separator);
+                    str.append("DESIGNATION").append(separator);
+                    str.append("IMMATRICULATION").append(separator);
+                    str.append("CONDUCTEUR").append(separator);
+
+                    bw.write(str.toString());
+                    for(Voiture uneVoiture : lesVoitures)
+                    {
+                        str = new StringBuilder();
+                        str.append(uneVoiture.getNumVoiture()).append(separator);
+                        str.append(uneVoiture.getDesignation()).append(separator);
+                        str.append(uneVoiture.getImmatriculation()).append(separator);
+                        str.append(uneVoiture.getConducteurNomPrenom()).append(separator);
+
+                        bw.newLine();
+                        bw.write(str.toString());
+                    }
+
+                    break;
+            }
+
+            file.flush();
+
+            succes = true;
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if (bw != null) {
+                    bw.close();
+                }
+
+                if (file != null) {
+                    file.close();
+                }
+
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return succes;
     }
 
 }
