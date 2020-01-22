@@ -6,6 +6,7 @@ import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoFactory;
 import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,18 +41,9 @@ public class VoitureManager
      * Constructeur Privé
      * @throws BllException Si erreur remonte à la couche supp
      */
-    private VoitureManager() throws BllException
+    private VoitureManager()
     {
         daoVoiture = DaoFactory.getDaoVoiture();
-        try
-        {
-            lesVoitures = daoVoiture.selectAll();
-        }
-        catch(DaoException ex)
-        {
-            logger.severe("ERREUR VoitureManager() " + ex.getMessage());
-            throw new BllException(ex.getMessage());
-        }
     }
 
     /**
@@ -99,16 +91,49 @@ public class VoitureManager
     }
 
     /**
-     * @param UneVoiture Voiture à ajouter
+     * @param immatriculation immatriculation à rechercher
+     * @return boolean pour savoir si l'immatriculation existe déjà en BdD
+     * @throws BllException Si erreur remonte à la couche supp
+     */
+    public boolean findImmatriculation(String immatriculation) throws BllException
+    {
+        List<Voiture> lesVoitures;
+        boolean succes = false;
+        try
+        {
+            lesVoitures = daoVoiture.selectAll();
+            for(Voiture voiture : lesVoitures)
+            {
+                if(voiture.getImmatriculation().trim().equals(immatriculation))
+                {
+                    succes = true;
+                    break;
+                }
+            }
+        }
+        catch(DaoException ex)
+        {
+            logger.severe("ERREUR VoitureManager.findImmatriculation() " + ex.getMessage());
+            throw new BllException(ex.getMessage());
+        }
+
+        return succes;
+    }
+
+    /**
+     * @param uneVoiture Voiture à ajouter
      * @return boolean pour savoir si l'ajout s'est bien passé
      * @throws BllException Si erreur remonte à la couche supp
      */
-    public boolean addVoiture(Voiture UneVoiture) throws BllException
+    public boolean addVoiture(Voiture uneVoiture) throws BllException
     {
-        boolean succes;
+        boolean succes = false;
         try
         {
-            succes = daoVoiture.insert(UneVoiture);
+            if(!findImmatriculation(uneVoiture.getImmatriculation()))
+            {
+                succes = daoVoiture.insert(uneVoiture);
+            }
         }
         catch(DaoException ex)
         {
@@ -120,19 +145,18 @@ public class VoitureManager
     }
 
     /**
-     * @param UnVoiture Voiture à mettre à jour
+     * @param uneVoiture Voiture à mettre à jour
      * @return boolean pour savoir si l'ajout s'est bien passé
      * @throws BllException Si erreur remonte à la couche supp
      */
-    public boolean updateVoiture(Voiture UnVoiture) throws BllException
+    public boolean updateVoiture(Voiture uneVoiture) throws BllException
     {
-        boolean succes;
+        boolean succes = false;
         try
         {
-            succes = daoVoiture.update(UnVoiture);
-            if(succes)
+            if(!findImmatriculation(uneVoiture.getImmatriculation()))
             {
-                lesVoitures.set(lesVoitures.indexOf(UnVoiture), UnVoiture);
+                succes = daoVoiture.update(uneVoiture);
             }
         }
         catch(DaoException ex)
@@ -145,21 +169,16 @@ public class VoitureManager
     }
 
     /**
-     * @param UnVoiture Voiture à supprimer
+     * @param uneVoiture Voiture à supprimer
      * @return boolean pour savoir si l'ajout s'est bien passé
      * @throws BllException Si erreur remonte à la couche supp
      */
-    public boolean removeVoiture(Voiture UnVoiture) throws BllException
+    public boolean removeVoiture(Voiture uneVoiture) throws BllException
     {
         boolean succes;
         try
         {
-            succes = daoVoiture.delete(UnVoiture.getNumVoiture());
-
-            if(succes)
-            {
-                lesVoitures.remove(UnVoiture);
-            }
+            succes = daoVoiture.delete(uneVoiture.getNumVoiture());
         }
         catch(DaoException ex)
         {

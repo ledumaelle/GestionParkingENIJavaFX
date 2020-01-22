@@ -105,7 +105,7 @@ public class GestionParkingController implements Initializable
             //VOITURES
             voitureManager = VoitureManager.getInstance();
 
-            // Initialise le TableView Conducteur
+            // Initialise le TableView Voiture
             colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
             colImmatriculation.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
 
@@ -157,6 +157,9 @@ public class GestionParkingController implements Initializable
             btnAjouterConducteur.setDisable(true);
             imgSaveConducteur.setVisible(false);
             imgSaveConducteur.setDisable(true);
+
+            txtNom.setStyle(null);
+            txtPrenom.setStyle(null);
         }
     }
 
@@ -176,6 +179,9 @@ public class GestionParkingController implements Initializable
             btnAjouterVoiture.setDisable(false);
             btnModifierVoiture.setDisable(false);
             btnSupprimerVoiture.setDisable(false);
+
+            txtDesignation.setStyle(null);
+            txtImmatriculation.setStyle(null);
         }
     }
 
@@ -218,13 +224,18 @@ public class GestionParkingController implements Initializable
         cmbConducteur.setValue(null);
     }
 
-
-    private List<Conducteur> getLesConducteurs(){
+    /**
+     * Retourne les conducteurs
+     * @return List<Conducteur>
+     */
+    private List<Conducteur> getLesConducteurs()
+    {
         List<Conducteur> lesConducteurs = new ArrayList<>();
         try
         {
             lesConducteurs = conducteurManager.getLesConducteurs();
             lesConducteurs.add(0,null);
+
         } catch (BllException e) {
             e.printStackTrace();
         }
@@ -559,12 +570,25 @@ public class GestionParkingController implements Initializable
         if (txtDesignation.getText() == null || txtDesignation.getText().length()<=0)
         {
             messageErreur =messageErreur + "\n" + "Désignation invalide";
-            txtDesignation.setStyle("-fx-background-color: red;");
+            txtDesignation.setStyle("-fx-background-color: salmon;");
         }
-        if (txtImmatriculation.getText() == null || txtImmatriculation.getText().length()<=0)
+        if (txtImmatriculation.getText() == null || txtImmatriculation.getText().length()<=0 || txtImmatriculation.getText().length()>10)
         {
-            messageErreur =messageErreur + "\n" + "Immatriculation invalide";
-            txtImmatriculation.setStyle("-fx-background-color: red;");
+            messageErreur =messageErreur + "\n" + "Immatriculation invalide (pas plus de 10 charactères)";
+            txtImmatriculation.setStyle("-fx-background-color: salmon;");
+        }
+        else
+        {
+            try
+            {
+                if(voitureManager.findImmatriculation(txtImmatriculation.getText()))
+                {
+                    messageErreur =messageErreur + "\n" + "Immatriculation déjà en base de données.";
+                }
+            } catch (BllException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         if (messageErreur.length() > 0)
@@ -592,12 +616,12 @@ public class GestionParkingController implements Initializable
         if (txtNom.getText() == null || txtNom.getText().length()<=0)
         {
             messageErreur =messageErreur + "\n" + "Nom invalide";
-            txtNom.setStyle("-fx-background-color: red;");
+            txtNom.setStyle("-fx-background-color: salmon;");
         }
         if (txtPrenom.getText() == null || txtPrenom.getText().length()<=0)
         {
             messageErreur =messageErreur + "\n" + "Prénom invalide";
-            txtPrenom.setStyle("-fx-background-color: red;");
+            txtPrenom.setStyle("-fx-background-color: salmon;");
         }
 
         if (messageErreur.length() > 0)
@@ -678,12 +702,9 @@ public class GestionParkingController implements Initializable
      */
     private boolean exportXML(String pathName,String classe)
     {
-        XMLEncoder e = null;
         boolean succes= false;
-        try
+        try(XMLEncoder e = new XMLEncoder( new BufferedOutputStream(new FileOutputStream(pathName))))
         {
-            e = new XMLEncoder( new BufferedOutputStream(new FileOutputStream(pathName)));
-
             switch(classe)
             {
                 case "CONDUCTEUR":
@@ -702,13 +723,6 @@ public class GestionParkingController implements Initializable
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
-        }
-        finally
-        {
-            if(e != null)
-            {
-                e.close();
-            }
         }
 
         return succes;

@@ -5,7 +5,6 @@ import fr.eni.gestion_parking_eni_javafx.dao.DaoConducteur;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoFactory;
 import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
-
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,10 +14,7 @@ import java.util.logging.Logger;
 public class ConducteurManager
 {
     private DaoConducteur daoConducteur;
-    private List<Conducteur> lesConducteurs;
-
     private static ConducteurManager INSTANCE;
-
     public static Logger logger = MonLogger.getLogger("ConducteurManager");
 
     /**
@@ -32,7 +28,6 @@ public class ConducteurManager
         {
             INSTANCE = new ConducteurManager();
         }
-
         return INSTANCE;
     }
 
@@ -43,15 +38,6 @@ public class ConducteurManager
     private ConducteurManager() throws BllException
     {
         daoConducteur = DaoFactory.getDaoConducteur();
-        try
-        {
-            lesConducteurs = daoConducteur.selectAll();
-        }
-        catch(DaoException ex)
-        {
-            logger.severe("ERREUR VoitureManager() " + ex.getMessage());
-            throw new BllException(ex.getMessage());
-        }
     }
 
     /**
@@ -105,7 +91,6 @@ public class ConducteurManager
         {
             if(daoConducteur.insert(UnConducteur))
             {
-                lesConducteurs.add(UnConducteur);
                 succes =  true;
             }
         }
@@ -129,7 +114,6 @@ public class ConducteurManager
         {
             if(daoConducteur.update(UnConducteur))
             {
-                lesConducteurs.set(lesConducteurs.indexOf(UnConducteur), UnConducteur);
                 succes = true;
             }
         }
@@ -153,7 +137,6 @@ public class ConducteurManager
         {
             if(daoConducteur.delete(UnConducteur.getNumConducteur()))
             {
-                lesConducteurs.remove(UnConducteur);
                 succes =  true;
             }
         }
