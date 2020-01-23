@@ -6,7 +6,6 @@ import fr.eni.gestion_parking_eni_javafx.dao.DaoException;
 import fr.eni.gestion_parking_eni_javafx.dao.DaoFactory;
 import fr.eni.gestion_parking_eni_javafx.utils.MonLogger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,7 +15,6 @@ import java.util.logging.Logger;
 public class VoitureManager
 {
     private DaoVoiture daoVoiture;
-    private List<Voiture> lesVoitures;
 
     public static Logger logger = MonLogger.getLogger("VoitureManager");
 
@@ -25,9 +23,8 @@ public class VoitureManager
     /**
      *  Design Pattern Singleton
      * @return VoitureManager
-     * @throws BllException Si erreur remonte à la couche supp
      */
-    public static VoitureManager getInstance() throws BllException
+    public static VoitureManager getInstance()
     {
         if(instance ==null)
         {
@@ -39,7 +36,6 @@ public class VoitureManager
 
     /**
      * Constructeur Privé
-     * @throws BllException Si erreur remonte à la couche supp
      */
     private VoitureManager()
     {
@@ -91,11 +87,11 @@ public class VoitureManager
     }
 
     /**
-     * @param immatriculation immatriculation à rechercher
+     * @param uneVoiture uneVoiture
      * @return boolean pour savoir si l'immatriculation existe déjà en BdD
      * @throws BllException Si erreur remonte à la couche supp
      */
-    public boolean findImmatriculation(String immatriculation) throws BllException
+    public boolean findImmatriculation(Voiture uneVoiture) throws BllException
     {
         List<Voiture> lesVoitures;
         boolean succes = false;
@@ -104,7 +100,7 @@ public class VoitureManager
             lesVoitures = daoVoiture.selectAll();
             for(Voiture voiture : lesVoitures)
             {
-                if(voiture.getImmatriculation().trim().equals(immatriculation))
+                if(voiture.getImmatriculation().trim().equals(uneVoiture.getImmatriculation()) && uneVoiture.getNumVoiture() != voiture.getNumVoiture())
                 {
                     succes = true;
                     break;
@@ -130,7 +126,7 @@ public class VoitureManager
         boolean succes = false;
         try
         {
-            if(!findImmatriculation(uneVoiture.getImmatriculation()))
+            if(!findImmatriculation(uneVoiture))
             {
                 succes = daoVoiture.insert(uneVoiture);
             }
@@ -154,7 +150,7 @@ public class VoitureManager
         boolean succes = false;
         try
         {
-            if(!findImmatriculation(uneVoiture.getImmatriculation()))
+            if(!findImmatriculation(uneVoiture))
             {
                 succes = daoVoiture.update(uneVoiture);
             }

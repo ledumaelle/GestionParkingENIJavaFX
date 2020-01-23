@@ -88,39 +88,32 @@ public class GestionParkingController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        try
-        {
-            //CONDUCTEURS
-            conducteurManager = ConducteurManager.getInstance();
+        //CONDUCTEURS
+        conducteurManager = ConducteurManager.getInstance();
 
-            // Initialise le TableView Conducteur
-            colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-            colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        // Initialise le TableView Conducteur
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
 
-            // Pour redimensionner les colonnes automatiquement
-            tabConducteurs.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Pour redimensionner les colonnes automatiquement
+        tabConducteurs.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-            refreshConducteur();
+        refreshConducteur();
 
-            //VOITURES
-            voitureManager = VoitureManager.getInstance();
+        //VOITURES
+        voitureManager = VoitureManager.getInstance();
 
-            // Initialise le TableView Voiture
-            colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
-            colImmatriculation.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
+        // Initialise le TableView Voiture
+        colDesignation.setCellValueFactory(new PropertyValueFactory<>("designation"));
+        colImmatriculation.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
 
-            colConducteur.setCellValueFactory(new PropertyValueFactory<>("ConducteurNomPrenom"));
-            //colConducteur.setSortable(false);
+        colConducteur.setCellValueFactory(new PropertyValueFactory<>("ConducteurNomPrenom"));
+        //colConducteur.setSortable(false);
 
-            // Pour redimensionner les colonnes automatiquement
-            tabConducteurs.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Pour redimensionner les colonnes automatiquement
+        tabConducteurs.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-            refreshVoiture();
-
-        } catch (BllException e)
-        {
-            e.printStackTrace();
-        }
+        refreshVoiture();
     }
 
     /**
@@ -154,12 +147,14 @@ public class GestionParkingController implements Initializable
             btnModifierConducteur.setDisable(false);
             btnSupprimerConducteur.setDisable(false);
 
-            btnAjouterConducteur.setDisable(true);
+            btnAjouterConducteur.setDisable(false);
             imgSaveConducteur.setVisible(false);
             imgSaveConducteur.setDisable(true);
 
             txtNom.setStyle(null);
             txtPrenom.setStyle(null);
+            txtNom.setDisable(false);
+            txtPrenom.setDisable(false);
         }
     }
 
@@ -182,6 +177,9 @@ public class GestionParkingController implements Initializable
 
             txtDesignation.setStyle(null);
             txtImmatriculation.setStyle(null);
+            txtDesignation.setDisable(false);
+            txtImmatriculation.setDisable(false);
+            cmbConducteur.setDisable(false);
         }
     }
 
@@ -193,6 +191,8 @@ public class GestionParkingController implements Initializable
 
         txtNom.setText("");
         txtPrenom.setText("");
+        txtNom.setDisable(false);
+        txtPrenom.setDisable(false);
 
         imgSaveConducteur.setVisible(true);
         imgSaveConducteur.setDisable(false);
@@ -201,6 +201,8 @@ public class GestionParkingController implements Initializable
         btnModifierConducteur.setDisable(true);
         btnSupprimerConducteur.setDisable(true);
         btnSupprimerConducteur.setDisable(true);
+
+        tabConducteurs.getSelectionModel().select(null);
     }
 
     /**
@@ -211,6 +213,9 @@ public class GestionParkingController implements Initializable
         txtDesignation.setText("");
         txtImmatriculation.setText("");
         cmbConducteur.setValue(null);
+        txtDesignation.setDisable(false);
+        txtImmatriculation.setDisable(false);
+        cmbConducteur.setDisable(false);
 
         imgSaveVoiture.setVisible(true);
         imgSaveVoiture.setDisable(false);
@@ -222,6 +227,8 @@ public class GestionParkingController implements Initializable
         cmbConducteur.setItems(null);
         cmbConducteur.setItems(FXCollections.observableList(getLesConducteurs()));
         cmbConducteur.setValue(null);
+
+        tabVoitures.getSelectionModel().select(null);
     }
 
     /**
@@ -287,6 +294,8 @@ public class GestionParkingController implements Initializable
             txtPrenom.setText("");
             txtNom.setStyle(null);
             txtPrenom.setStyle(null);
+            txtNom.setDisable(true);
+            txtPrenom.setDisable(true);
 
             imgSaveConducteur.setVisible(false);
             imgSaveConducteur.setDisable(false);
@@ -317,10 +326,16 @@ public class GestionParkingController implements Initializable
             txtImmatriculation.setText("");
             txtImmatriculation.setStyle(null);
             cmbConducteur.setValue(null);
+            txtDesignation.setDisable(true);
+            txtImmatriculation.setDisable(true);
+            cmbConducteur.setDisable(true);
 
             btnAjouterVoiture.setDisable(false);
             btnModifierVoiture.setDisable(true);
             btnSupprimerVoiture.setDisable(true);
+
+            imgSaveVoiture.setDisable(true);
+            imgSaveVoiture.setVisible(false);
 
         } catch (BllException e) {
             e.printStackTrace();
@@ -388,6 +403,7 @@ public class GestionParkingController implements Initializable
 
                         //Refresh la vue
                         refreshConducteur();
+                        refreshVoiture();
                     }
                     else
                     {
@@ -425,6 +441,7 @@ public class GestionParkingController implements Initializable
 
                     //Refresh la vue
                     refreshConducteur();
+                    refreshVoiture();
                 }
                 else
                 {
@@ -475,6 +492,10 @@ public class GestionParkingController implements Initializable
         }
     }
 
+    /**
+     * Construit l'objet Voiture
+     * @return Voiture
+     */
     private Voiture itemVoiture()
     {
         Voiture uneVoiture = new Voiture();
@@ -567,9 +588,14 @@ public class GestionParkingController implements Initializable
         String messageErreur = "";
         boolean retour = true;
 
-        if (txtDesignation.getText() == null || txtDesignation.getText().length()<=0)
+        if (txtDesignation.getText() == null || txtDesignation.getText().length()<=0 )
         {
             messageErreur =messageErreur + "\n" + "Désignation invalide";
+            txtDesignation.setStyle("-fx-background-color: salmon;");
+        }
+        else if(txtDesignation.getText().length()>50)
+        {
+            messageErreur =messageErreur + "\n" + "Désignation invalide (pas plus de 50 charactères)";
             txtDesignation.setStyle("-fx-background-color: salmon;");
         }
         if (txtImmatriculation.getText() == null || txtImmatriculation.getText().length()<=0 || txtImmatriculation.getText().length()>10)
@@ -581,9 +607,15 @@ public class GestionParkingController implements Initializable
         {
             try
             {
-                if(voitureManager.findImmatriculation(txtImmatriculation.getText()))
+                Voiture uneVoiture = itemVoiture();
+                if(getVoitureSelected() != null)
+                {
+                    uneVoiture.setNumVoiture(getVoitureSelected().getNumVoiture());
+                }
+                if(voitureManager.findImmatriculation(uneVoiture))
                 {
                     messageErreur =messageErreur + "\n" + "Immatriculation déjà en base de données.";
+                    txtImmatriculation.setStyle("-fx-background-color: salmon;");
                 }
             } catch (BllException e)
             {
@@ -618,9 +650,19 @@ public class GestionParkingController implements Initializable
             messageErreur =messageErreur + "\n" + "Nom invalide";
             txtNom.setStyle("-fx-background-color: salmon;");
         }
+        else if(txtNom.getText().length()>50)
+        {
+            messageErreur =messageErreur + "\n" + "Nom invalide (pas plus de 50 charactères)";
+            txtNom.setStyle("-fx-background-color: salmon;");
+        }
         if (txtPrenom.getText() == null || txtPrenom.getText().length()<=0)
         {
             messageErreur =messageErreur + "\n" + "Prénom invalide";
+            txtPrenom.setStyle("-fx-background-color: salmon;");
+        }
+        else if(txtPrenom.getText().length()>50)
+        {
+            messageErreur =messageErreur + "\n" + "Prénom invalide (pas plus de 50 charactères)";
             txtPrenom.setStyle("-fx-background-color: salmon;");
         }
 

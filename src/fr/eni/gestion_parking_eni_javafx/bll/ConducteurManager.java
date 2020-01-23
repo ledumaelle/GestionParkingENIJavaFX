@@ -20,10 +20,8 @@ public class ConducteurManager
     /**
      * Design Pattern Singleton
      * @return ConducteurManager
-     * @throws BllException Si erreur remonte à la couche supp
      */
-    public static ConducteurManager getInstance() throws BllException
-    {
+    public static ConducteurManager getInstance(){
         if(INSTANCE ==null)
         {
             INSTANCE = new ConducteurManager();
@@ -33,9 +31,8 @@ public class ConducteurManager
 
     /**
      * Constructeur Privé
-     * @throws BllException Si erreur remonte à la couche supp
      */
-    private ConducteurManager() throws BllException
+    private ConducteurManager()
     {
         daoConducteur = DaoFactory.getDaoConducteur();
     }
