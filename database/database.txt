@@ -1,0 +1,31 @@
+CREATE TABLE VOITURES (
+	numVoiture int identity(1,1),
+	designation varchar(50) ,
+	immatriculation varchar(10),
+	numConducteur int,
+)
+
+CREATE TABLE CONDUCTEURS (
+	numConducteur int identity(1,1),
+	nom varchar(50) ,
+	prenom varchar(50),
+)
+
+ALTER TABLE VOITURES ADD CONSTRAINT PK_VOITURES_numVoiture PRIMARY KEY (numVoiture);
+ALTER TABLE CONDUCTEURS ADD CONSTRAINT PK_CONDUCTEURS_numConducteur PRIMARY KEY (numConducteur);
+
+ALTER TABLE VOITURES ADD CONSTRAINT FK_VOITURES_CONDUCTEURS_numConducteur FOREIGN KEY (numConducteur) REFERENCES CONDUCTEURS(numConducteur);
+
+ALTER TABLE VOITURES ADD CONSTRAINT UN_VOITURES_designation UNIQUE (designation);
+
+INSERT INTO CONDUCTEURS (nom, prenom) VALUES ('HÉANTIE','Anne');
+INSERT INTO CONDUCTEURS (nom, prenom) VALUES ('DESPLUMES','Gilles');
+INSERT INTO CONDUCTEURS (nom, prenom) VALUES ('LE DU','Maëlle');
+INSERT INTO CONDUCTEURS (nom, prenom) VALUES ('CORMIER','Aymeric');
+
+INSERT INTO VOITURES (designation,immatriculation,numConducteur) VALUES ('Clio II','759 LD 44',1);
+INSERT INTO VOITURES (designation,immatriculation) VALUES ('R5','452 JF 35');
+INSERT INTO VOITURES (designation,immatriculation,numConducteur) VALUES ('106','159 NV 14',2);
+INSERT INTO VOITURES (designation,immatriculation) VALUES ('DS4','538 FI 59');
+
+
