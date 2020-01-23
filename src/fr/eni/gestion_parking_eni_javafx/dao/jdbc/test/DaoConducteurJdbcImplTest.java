@@ -38,7 +38,7 @@ class DaoConducteurJdbcImplTest {
 
             daoConducteur.insert(unConducteurParDefaut);
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ class DaoConducteurJdbcImplTest {
                 daoConducteur.delete(unConducteurParDefaut.getNumConducteur());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
         try
         {
@@ -64,7 +64,7 @@ class DaoConducteurJdbcImplTest {
                 daoConducteur.delete(unConducteurInsert.getNumConducteur());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
         try
         {
@@ -73,7 +73,7 @@ class DaoConducteurJdbcImplTest {
                 daoConducteur.delete(unConducteurUpdate.getNumConducteur());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ class DaoConducteurJdbcImplTest {
             assertEquals((sizeBeforeInsert + 1), sizeAfterInsert);
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -149,7 +149,7 @@ class DaoConducteurJdbcImplTest {
 
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -178,7 +178,7 @@ class DaoConducteurJdbcImplTest {
 
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 }

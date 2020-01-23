@@ -50,7 +50,7 @@ class DaoVoitureJdbcImplTest {
             daoVoiture.insert(uneVoitureParDefaut);
 
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -64,28 +64,28 @@ class DaoVoitureJdbcImplTest {
                 daoVoiture.delete(uneVoitureParDefaut.getNumVoiture());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
         try {
             if (uneVoitureInsert != null && daoVoiture.selectById(uneVoitureInsert.getNumVoiture()) != null) {
                 daoVoiture.delete(uneVoitureInsert.getNumVoiture());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
         try {
             if (uneVoitureUpdate != null && daoVoiture.selectById(uneVoitureUpdate.getNumVoiture()) != null) {
                 daoVoiture.delete(uneVoitureUpdate.getNumVoiture());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
         try {
             if (conducteurTest != null && daoConducteur.selectById(conducteurTest.getNumConducteur()) != null) {
                 daoConducteur.delete(conducteurTest.getNumConducteur());
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -134,7 +134,7 @@ class DaoVoitureJdbcImplTest {
             assertEquals((sizeBeforeInsert + 1), sizeAfterInsert);
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -170,7 +170,7 @@ class DaoVoitureJdbcImplTest {
 
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -199,7 +199,7 @@ class DaoVoitureJdbcImplTest {
 
         } catch (DaoException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 }

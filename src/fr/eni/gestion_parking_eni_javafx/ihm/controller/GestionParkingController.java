@@ -27,7 +27,6 @@ import java.util.ResourceBundle;
  */
 public class GestionParkingController implements Initializable
 {
-    private List<Conducteur> lesConducteurs = new ArrayList<>();
     private List<Voiture> lesVoitures = new ArrayList<>();
 
     //Manager
@@ -184,11 +183,27 @@ public class GestionParkingController implements Initializable
     }
 
     /**
+     * Bouton permettant de reset le forumulaire de conducteur
+     */
+    public void handleResetConducteur()
+    {
+        refreshConducteur();
+    }
+
+    /**
+     * Bouton permettant de reset le forumulaire de voiture
+     */
+    public void handleResetVoiture()
+    {
+        refreshVoiture();
+    }
+
+
+    /**
      * Rénitialise le formulaire pour ajouter un conducteur
      */
     public void handleAddConducteur()
     {
-
         txtNom.setText("");
         txtPrenom.setText("");
         txtNom.setDisable(false);
@@ -225,7 +240,7 @@ public class GestionParkingController implements Initializable
         btnSupprimerVoiture.setDisable(true);
 
         cmbConducteur.setItems(null);
-        cmbConducteur.setItems(FXCollections.observableList(getLesConducteurs()));
+        cmbConducteur.setItems(FXCollections.observableList(getLesConducteursWithNul()));
         cmbConducteur.setValue(null);
 
         tabVoitures.getSelectionModel().select(null);
@@ -236,6 +251,23 @@ public class GestionParkingController implements Initializable
      * @return List<Conducteur>
      */
     private List<Conducteur> getLesConducteurs()
+    {
+        List<Conducteur> lesConducteurs = new ArrayList<>();
+        try
+        {
+            lesConducteurs = conducteurManager.getLesConducteurs();
+
+        } catch (BllException e) {
+            e.printStackTrace();
+        }
+        return lesConducteurs;
+    }
+
+    /**
+     * Retourne les conducteurs
+     * @return List<Conducteur>
+     */
+    private List<Conducteur> getLesConducteursWithNul()
     {
         List<Conducteur> lesConducteurs = new ArrayList<>();
         try
@@ -274,7 +306,7 @@ public class GestionParkingController implements Initializable
         txtDesignation.setText(uneVoiture.getDesignation().trim());
         txtImmatriculation.setText(uneVoiture.getImmatriculation().trim());
 
-        cmbConducteur.setItems(FXCollections.observableList(getLesConducteurs()));
+        cmbConducteur.setItems(FXCollections.observableList(getLesConducteursWithNul()));
         cmbConducteur.setValue(uneVoiture.getUnConducteur());
     }
 
@@ -283,30 +315,28 @@ public class GestionParkingController implements Initializable
      */
     private void refreshConducteur()
     {
-        try
-        {
-            tabConducteurs.setItems(null);
-            lesConducteurs = conducteurManager.getLesConducteurs();
-            tabConducteurs.setItems(FXCollections.observableList(lesConducteurs));
-            tabConducteurs.refresh();
+        tabConducteurs.setItems(null);
+        tabConducteurs.setItems(FXCollections.observableList(getLesConducteurs()));
+        tabConducteurs.refresh();
 
-            txtNom.setText("");
-            txtPrenom.setText("");
-            txtNom.setStyle(null);
-            txtPrenom.setStyle(null);
-            txtNom.setDisable(true);
-            txtPrenom.setDisable(true);
+        cmbConducteur.setItems(null);
+        cmbConducteur.setItems(FXCollections.observableList(getLesConducteursWithNul()));
+        cmbConducteur.setValue(null);
 
-            imgSaveConducteur.setVisible(false);
-            imgSaveConducteur.setDisable(false);
+        txtNom.setText("");
+        txtPrenom.setText("");
+        txtNom.setStyle(null);
+        txtPrenom.setStyle(null);
+        txtNom.setDisable(true);
+        txtPrenom.setDisable(true);
 
-            btnAjouterConducteur.setDisable(false);
-            btnModifierConducteur.setDisable(true);
-            btnSupprimerConducteur.setDisable(true);
+        imgSaveConducteur.setVisible(false);
+        imgSaveConducteur.setDisable(false);
 
-        } catch (BllException e) {
-            e.printStackTrace();
-        }
+        btnAjouterConducteur.setDisable(false);
+        btnModifierConducteur.setDisable(true);
+        btnSupprimerConducteur.setDisable(true);
+
     }
 
     /**
@@ -688,7 +718,6 @@ public class GestionParkingController implements Initializable
 
         try
         {
-            lesConducteurs = conducteurManager.getLesConducteurs();
             lesVoitures = voitureManager.getLesVoitures();
 
 
@@ -750,7 +779,7 @@ public class GestionParkingController implements Initializable
             switch(classe)
             {
                 case "CONDUCTEUR":
-                    for(Conducteur conducteur : lesConducteurs)
+                    for(Conducteur conducteur : getLesConducteurs())
                     {
                         e.writeObject(conducteur);
                     }
@@ -780,7 +809,6 @@ public class GestionParkingController implements Initializable
 
         try
         {
-            lesConducteurs = conducteurManager.getLesConducteurs();
             lesVoitures = voitureManager.getLesVoitures();
 
         } catch (BllException e) {
@@ -854,7 +882,7 @@ public class GestionParkingController implements Initializable
                     str.append("PRENOM").append(separator);
 
                     bw.write(str.toString());
-                    for(Conducteur unConducteur : lesConducteurs)
+                    for(Conducteur unConducteur : getLesConducteurs())
                     {
                         str = new StringBuilder();
                         str.append(unConducteur.getNumConducteur()).append(separator);
